@@ -4,9 +4,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.retry.MessageKeyGenerator;
 import org.springframework.util.Assert;
+
 /**
  * 
  * @author James Carr
+ * @author Sam Nelson
  *
  */
 public class ContentBasedMessageKeyGenerator implements MessageKeyGenerator{

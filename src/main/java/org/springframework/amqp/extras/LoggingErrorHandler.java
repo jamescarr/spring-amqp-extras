@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.ErrorHandler;
 
 /**
+ * A default implementation of ErrorHandler that takes a Logger
+ * provided by the user and logs all messages to that logger with
+ * a log level of warn.
  * 
  * @author James Carr
  *
