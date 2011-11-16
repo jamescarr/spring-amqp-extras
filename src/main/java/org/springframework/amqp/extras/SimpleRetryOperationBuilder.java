@@ -74,6 +74,7 @@ public class SimpleRetryOperationBuilder {
     }
 
     public SimpleRetryOperationBuilder using(MessageKeyGenerator messageKeyGenerator) {
+        this.messageKeyGenerator = messageKeyGenerator;
         return this;
     }
 
