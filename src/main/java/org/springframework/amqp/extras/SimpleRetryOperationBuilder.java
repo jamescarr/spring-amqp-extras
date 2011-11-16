@@ -27,7 +27,7 @@ import java.util.Collections;
  */
 public class SimpleRetryOperationBuilder {
     private final AmqpTemplate amqpTemplate;
-    private MessageKeyGenerator messageKeyGenerator = new ContentBasedMessageKeyGenerator();
+    private MessageKeyGenerator messageKeyGenerator;
 
     public SimpleRetryOperationBuilder(AmqpTemplate amqpTemplate) {
         this.amqpTemplate = amqpTemplate;
@@ -47,7 +47,10 @@ public class SimpleRetryOperationBuilder {
                 .<Class<? extends Throwable>, Boolean>singletonMap(Exception.class, true)));
 
         interceptorFactoryBean.setRetryOperations(retryTemplate);
-        interceptorFactoryBean.setMessageKeyGeneretor(messageKeyGenerator);
+        if(messageKeyGenerator != null){
+            interceptorFactoryBean.setMessageKeyGeneretor(messageKeyGenerator);
+        }
+
         RepublishMessageRecoverer messageRecoverer = new RepublishMessageRecoverer();
         messageRecoverer.setErrorTemplate(amqpTemplate);
         interceptorFactoryBean.setMessageRecoverer(messageRecoverer);
