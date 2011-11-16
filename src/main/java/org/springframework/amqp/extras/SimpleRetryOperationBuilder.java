@@ -12,14 +12,22 @@ import java.util.Collections;
 /**
  * Simplified facade to make it easier and simpler to build a StatefulRetryOperationsInterceptor
  * by providing a more fluent interface to defining behavior on error.
- * <p/>
+ *
  * Typical example:
- * <p/>
+ *
  * <code>
  * SimpleRetryOperationsBuillder builder = new  SimpleRetryOperationsBuillder(amqpTemplate);
  * StatefulRetryOperationsInterceptor advice = builder.afterMaxAttempts(10).publishTo("error-exchange");
  * </code>
- * <p/>
+ * The default behavior determines message identity based on messageId. This isn't a required field and may  not
+ * even be set. If it is not, you can change the logic to determine message identity based on contents:
+ *
+ * <code>
+ * SimpleRetryOperationsBuillder builder = new  SimpleRetryOperationsBuillder(amqpTemplate);
+ * StatefulRetryOperationsInterceptor advice = builder.using(new ContentBasedMessageKeyGenerator())
+ *                                                                      .afterMaxAttempts(10).publishTo("error-exchange");
+ * </code>
+ *
  * The current default behavior uses a ContentBasedMessageKeyGenerator for identifying message "uniqueness"
  * but can be overridden by providing a MessageKeyGenerator implementation to the with() method.
  *
