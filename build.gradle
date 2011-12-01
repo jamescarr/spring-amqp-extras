@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply from: 'https://raw.github.com/tomhermann/gradle-scripts/master/sources-javadoc.gradle'
 repositories {
     mavenCentral()
     mavenRepo urls: ['http://maven.springframework.org/milestone/', 'http://repository.springsource.com/maven/bundles/release/']
