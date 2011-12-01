@@ -3,6 +3,8 @@ package org.springframework.amqp.extras;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
@@ -19,6 +21,7 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
  * @author jamescarr
  */
 public class RepublishMessageRecoverer implements MessageRecoverer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RepublishMessageRecoverer.class);
     private AmqpTemplate errorTemplate;
     private String exchangeName;
 
@@ -42,10 +45,14 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
         cause.printStackTrace(new PrintStream(byteArrayOutputStream));
         message.getMessageProperties().getHeaders()
                 .put("x-exception", byteArrayOutputStream.toString());
+        
         if (null != exchangeName) {
             errorTemplate.send(exchangeName, message.getMessageProperties().getReceivedRoutingKey(), message);
+            LOGGER.warn("Republishing message to exchange {}", exchangeName);
         } else {
-            errorTemplate.send("error." + message.getMessageProperties().getReceivedRoutingKey(), message);
+            final String routingKey = "error." + message.getMessageProperties().getReceivedRoutingKey();
+			errorTemplate.send(routingKey, message);
+            LOGGER.warn("Republishing error'd message to default exchange with routing key {}", routingKey);
         }
     }
 

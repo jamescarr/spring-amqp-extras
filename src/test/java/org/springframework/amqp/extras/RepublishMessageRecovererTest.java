@@ -53,4 +53,9 @@ public class RepublishMessageRecovererTest {
 		assertEquals(expectedHeaderValue, message.getMessageProperties().getHeaders().get("x-exception"));
 	}
 	
+	@Test
+	public void shouldSetTheNumberOfRetriesOnTheMessage(){
+		
+	}
+	
 }
