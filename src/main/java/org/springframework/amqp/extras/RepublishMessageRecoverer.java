@@ -2,6 +2,7 @@ package org.springframework.amqp.extras;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +42,10 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
     }
 
     public void recover(Message message, Throwable cause) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        cause.printStackTrace(new PrintStream(byteArrayOutputStream));
-        message.getMessageProperties().getHeaders()
-                .put("x-exception", byteArrayOutputStream.toString());
+        Map<String, Object> headers = message.getMessageProperties().getHeaders();
+		headers.put("x-exception-stacktrace", getStackTraceAsString(cause));
+		headers.put("x-exception-message", cause.getCause().getMessage());
+		headers.put("x-original-exchange", message.getMessageProperties().getReceivedExchange());
         
         if (null != exchangeName) {
             errorTemplate.send(exchangeName, message.getMessageProperties().getReceivedRoutingKey(), message);
@@ -55,6 +56,13 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
             LOGGER.warn("Republishing error'd message to default exchange with routing key {}", routingKey);
         }
     }
+
+	private String getStackTraceAsString(Throwable cause) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        cause.printStackTrace(new PrintStream(byteArrayOutputStream));
+		String exceptionAsString = byteArrayOutputStream.toString();
+		return exceptionAsString;
+	}
 
 
 }

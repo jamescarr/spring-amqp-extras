@@ -18,7 +18,7 @@ import org.springframework.amqp.core.MessageProperties;
 @RunWith(MockitoJUnitRunner.class)
 public class RepublishMessageRecovererTest {
 	Message message = new Message("".getBytes(), new MessageProperties());
-	Throwable cause = new Exception("I am Error. When all else fails use fire.");
+	Throwable cause = new Exception(new Exception("I am Error. When all else fails use fire."));
 	@Mock AmqpTemplate amqpTemplate;
 	RepublishMessageRecoverer recoverer;
 	
@@ -50,12 +50,27 @@ public class RepublishMessageRecovererTest {
 		final String expectedHeaderValue = baos.toString();
 		
 		recoverer.recover(message, cause);
-		assertEquals(expectedHeaderValue, message.getMessageProperties().getHeaders().get("x-exception"));
+		
+		assertEquals(expectedHeaderValue, message.getMessageProperties().getHeaders().get("x-exception-stacktrace"));
 	}
 	
 	@Test
-	public void shouldSetTheNumberOfRetriesOnTheMessage(){
+	public void shouldIncludeTheCauseMessageInTheHeaderOfThePublishedMessage(){
+		recoverer.recover(message, cause);
 		
+		assertEquals(cause.getCause().getMessage(), 
+				message.getMessageProperties().getHeaders().get("x-exception-message"));
+	}
+	
+	@Test
+	public void shouldSetTheOriginalMessageExchangeOnInTheHeaders(){
+		message.getMessageProperties().setReceivedExchange("the.original.exchange");
+		recoverer.setErrorExchange("error");
+		
+		recoverer.recover(message, cause);
+		
+		assertEquals("the.original.exchange", 
+				message.getMessageProperties().getHeaders().get("x-original-exchange"));
 	}
 	
 }

@@ -10,6 +10,8 @@ import org.springframework.amqp.rabbit.retry.MessageKeyGenerator;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
+import org.springframework.retry.backoff.BackOffPolicy;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.interceptor.StatefulRetryOperationsInterceptor;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -96,7 +98,7 @@ public class SimpleRetryOperationBuilder {
         RepublishMessageRecoverer messageRecoverer = new RepublishMessageRecoverer();
         messageRecoverer.setErrorTemplate(amqpTemplate);
         interceptorFactoryBean.setMessageRecoverer(messageRecoverer);
-        return new PublishBuilder(interceptorFactoryBean, messageRecoverer);
+        return new PublishBuilder(interceptorFactoryBean,  messageRecoverer, retryTemplate);
     }
 
     public SimpleRetryOperationBuilder using(MessageKeyGenerator messageKeyGenerator) {
@@ -108,15 +110,20 @@ public class SimpleRetryOperationBuilder {
 
         private StatefulRetryOperationsInterceptorFactoryBean factory;
         private RepublishMessageRecoverer messageRecoverer;
-
-        public PublishBuilder(StatefulRetryOperationsInterceptorFactoryBean factory, RepublishMessageRecoverer messageRecoverer) {
+        private FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+		private final RetryTemplate retryTemplate;
+        public PublishBuilder(StatefulRetryOperationsInterceptorFactoryBean factory, RepublishMessageRecoverer messageRecoverer, RetryTemplate retryTemplate) {
             this.factory = factory;
             this.messageRecoverer = messageRecoverer;
+			this.retryTemplate = retryTemplate;
         }
-
+        public PublishBuilder withDurationBetweenRetries(long seconds){
+        	backOffPolicy.setBackOffPeriod(seconds * 60L);
+        	return this;
+        }
         public StatefulRetryOperationsInterceptor publishTo(String exchangeName) {
             messageRecoverer.setErrorExchange(exchangeName);
-
+            retryTemplate.setBackOffPolicy(backOffPolicy);
             return factory.getObject();
         }
     }
