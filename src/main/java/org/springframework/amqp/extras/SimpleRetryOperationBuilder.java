@@ -117,8 +117,13 @@ public class SimpleRetryOperationBuilder {
             this.messageRecoverer = messageRecoverer;
 			this.retryTemplate = retryTemplate;
         }
-        public PublishBuilder withDurationBetweenRetries(long seconds){
-        	backOffPolicy.setBackOffPeriod(seconds * 60L);
+        /**
+         * 
+         * @param seconds
+         * @return
+         */
+        public PublishBuilder withDurationBetweenRetriesInSeconds(int seconds){
+        	backOffPolicy.setBackOffPeriod(seconds * 1000L);
         	return this;
         }
         public StatefulRetryOperationsInterceptor publishTo(String exchangeName) {
