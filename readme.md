@@ -10,4 +10,5 @@ This is an implementation of the ErrorHandler interface that you can attach to S
 Two classes that aid in message recovery when a message cannot be consumed are provided: 
 
 * ContentBasesMessageKeyGenerator - generates a unique key based on the message's content
-* RepublishMessageRecoverer - publishes messages that erorred out to a specified exchange.
+* RepublishMessageRecoverer - publishes messages that erorred out to a specified exchange. 
+
