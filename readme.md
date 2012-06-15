@@ -1,6 +1,12 @@
 # spring-amqp-extras
 This is a project that contains nice extras to complement spring-amqp.
 
+
+
+
+
+
+
 =======
 ## LoggingErrorHandler
 This is an implementation of the ErrorHandler interface that you can attach to SimpleMessageListenerContainer to log errors that occur when consuming messages.
