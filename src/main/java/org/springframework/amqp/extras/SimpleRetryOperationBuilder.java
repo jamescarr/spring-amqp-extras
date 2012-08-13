@@ -47,6 +47,7 @@ identity based on contents:</p>
  * </p>
  * 
  * @author James Carr
+ * @author Jacob Rogers
  */
 public class SimpleRetryOperationBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleRetryOperationBuilder.class);
@@ -106,7 +107,7 @@ public class SimpleRetryOperationBuilder {
         return this;
     }
 
-    static class PublishBuilder {
+    public class PublishBuilder {
 
         private StatefulRetryOperationsInterceptorFactoryBean factory;
         private RepublishMessageRecoverer messageRecoverer;
