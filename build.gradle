@@ -5,7 +5,10 @@ apply plugin: 'maven'
 apply from: 'https://raw.github.com/tomhermann/gradle-scripts/master/sources-javadoc.gradle'
 repositories {
     mavenCentral()
-    mavenRepo urls: ['http://maven.springframework.org/milestone/', 'http://repository.springsource.com/maven/bundles/release/']
+    maven {
+		  url 'http://maven.springframework.org/milestone/'
+		  url 'http://repository.springsource.com/maven/bundles/release/'
+    }
 
 }
 
