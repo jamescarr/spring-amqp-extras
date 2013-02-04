@@ -36,6 +36,15 @@ public class RepublishMessageRecovererTest {
 	}
 	
 	@Test
+	public void shouldPublishWithSetErrorRoutingKeyWhenExchangeAndErrorRoutingKeyProvided(){
+		recoverer.setErrorExchange("errorExchange");
+		recoverer.setErrorRoutingKey("errorRoutingKey");
+		recoverer.recover(message, cause);
+		
+		verify(amqpTemplate).send("errorExchange", "errorRoutingKey", message);
+	}
+	
+	@Test
 	public void shouldPublishToProvidedExchange(){
 		recoverer.setErrorExchange("error");
 		
