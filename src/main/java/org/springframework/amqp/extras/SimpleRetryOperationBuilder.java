@@ -127,6 +127,11 @@ public class SimpleRetryOperationBuilder {
         	backOffPolicy.setBackOffPeriod(seconds * 1000L);
         	return this;
         }
+        public PublishBuilder withErrorRoutingKey(String routingKey){
+        	messageRecoverer.setErrorRoutingKey(routingKey);
+        	return this;
+        }
+        
         public StatefulRetryOperationsInterceptor publishTo(String exchangeName) {
             messageRecoverer.setErrorExchange(exchangeName);
             retryTemplate.setBackOffPolicy(backOffPolicy);
