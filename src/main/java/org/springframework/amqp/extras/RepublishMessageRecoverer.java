@@ -24,13 +24,19 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 public class RepublishMessageRecoverer implements MessageRecoverer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepublishMessageRecoverer.class);
     private AmqpTemplate errorTemplate;
-    private String exchangeName;
+    private String errorRoutingKey;
+
+	private String exchangeName;
 
     /**
      * @param errorTemplate
      */
     public void setErrorTemplate(AmqpTemplate errorTemplate) {
         this.errorTemplate = errorTemplate;
+    }
+
+    public void setErrorRoutingKey(String errorRoutingKey) {
+    	this.errorRoutingKey = errorRoutingKey;
     }
 
     /**
@@ -48,7 +54,8 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
 		headers.put("x-original-exchange", message.getMessageProperties().getReceivedExchange());
         
         if (null != exchangeName) {
-            errorTemplate.send(exchangeName, message.getMessageProperties().getReceivedRoutingKey(), message);
+        	String routingKey = errorRoutingKey!=null ? errorRoutingKey : message.getMessageProperties().getReceivedRoutingKey();
+            errorTemplate.send(exchangeName, routingKey, message);
             LOGGER.warn("Republishing message to exchange {}", exchangeName);
         } else {
             final String routingKey = "error." + message.getMessageProperties().getReceivedRoutingKey();
