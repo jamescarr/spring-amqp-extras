@@ -1,10 +1,14 @@
 package org.springframework.amqp.extras;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +74,17 @@ public class RepublishMessageRecovererTest {
 		assertEquals(cause.getCause().getMessage(), 
 				message.getMessageProperties().getHeaders().get("x-exception-message"));
 	}
+	@Test
+	public void shouldIncludeDateInTheHeaderOfThePublishedMessage(){
+		recoverer.recover(message, cause);
+		assertNotNull(message.getMessageProperties().getHeaders().get("x-consumer-error-date"));
+		assertTrue("missing error date - actual: "+message.getMessageProperties().getHeaders().get("x-consumer-error-date"),	message.getMessageProperties().getHeaders().get("x-consumer-error-date").toString().contains(makeDateString("yyyy-MM-dd")));
+	}
 	
+	private String makeDateString(String format) {
+		SimpleDateFormat f = new SimpleDateFormat(format);
+		return f.format(new Date());
+	}
 	@Test
 	public void shouldSetTheOriginalMessageExchangeOnInTheHeaders(){
 		message.getMessageProperties().setReceivedExchange("the.original.exchange");
